@@ -26,6 +26,17 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
 
+  /* SENHA */
+  #senha-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+  .senha-card { background: var(--card); border-radius: 16px; padding: 2rem; width: 100%; max-width: 360px; border: 1px solid #ffffff15; text-align: center; }
+  .senha-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .senha-card h2 { font-size: 1rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .senha-input { width: 100%; background: #ffffff10; border: 1px solid #ffffff20; border-radius: 8px; padding: .85rem 1rem; color: var(--text); font-size: 1.4rem; font-weight: 700; letter-spacing: 6px; text-align: center; outline: none; transition: border .2s; margin-bottom: 1rem; }
+  .senha-input:focus { border-color: var(--red); }
+  .senha-error { color: #e74c3c; font-size: .85rem; margin-top: .5rem; min-height: 1.2rem; }
+  .shake { animation: shake .4s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
+
   /* CONFIG */
   #config-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
   .logo { font-size: 2.5rem; font-weight: 900; color: var(--red); letter-spacing: -1px; margin-bottom: .25rem; }
@@ -137,6 +148,20 @@
 </head>
 <body>
 
+<!-- SENHA -->
+<div id="senha-screen">
+  <div class="logo">RONDON QUIZ</div>
+  <div class="subtitle">Painel do Apresentador</div>
+  <div class="senha-card">
+    <div class="senha-icon">🔒</div>
+    <h2>Digite a senha para continuar</h2>
+    <input class="senha-input" id="senha-input" type="password" maxlength="10" placeholder="••••••"
+      onkeydown="if(event.key==='Enter') verificarSenha()" autofocus />
+    <button class="btn-primary" onclick="verificarSenha()">Entrar</button>
+    <div class="senha-error" id="senha-error"></div>
+  </div>
+</div>
+
 <!-- CONFIG (oculta — conexão automática) -->
 <div id="config-screen" style="display:none"></div>
 
@@ -240,8 +265,27 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let supabase, sessionCode, sessionId, currentQ = 0, timerInterval, timeLeft, answered = false, revealed = false;
 let participants = {}, participantUrl = '';
 
+const SENHA = '14993';
+
+function verificarSenha() {
+  const val = document.getElementById('senha-input').value;
+  const err = document.getElementById('senha-error');
+  const card = document.querySelector('.senha-card');
+  if (val === SENHA) {
+    sessionStorage.setItem('rondon_auth', '1');
+    connectSupabase();
+  } else {
+    err.textContent = 'Senha incorreta. Tente novamente.';
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+    document.getElementById('senha-input').value = '';
+    document.getElementById('senha-input').focus();
+  }
+}
+
 function show(id) {
-  ['config-screen','lobby-screen','question-screen','ranking-screen','final-screen'].forEach(s => {
+  ['senha-screen','config-screen','lobby-screen','question-screen','ranking-screen','final-screen'].forEach(s => {
     document.getElementById(s).style.display = 'none';
   });
   document.getElementById(id).style.display = 'flex';
@@ -262,7 +306,13 @@ async function connectSupabase() {
   }
 }
 
-window.addEventListener('load', () => connectSupabase());
+window.addEventListener('load', () => {
+  if (sessionStorage.getItem('rondon_auth') === '1') {
+    connectSupabase();
+  } else {
+    show('senha-screen');
+  }
+});
 
 function setupLobby() {
   show('lobby-screen');
