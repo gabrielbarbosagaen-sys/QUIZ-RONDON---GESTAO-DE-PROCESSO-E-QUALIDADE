@@ -144,6 +144,8 @@
   .hidden { display: none !important; }
   .msg { background: var(--card2); border-radius: 8px; padding: .6rem 1rem; color: var(--muted); font-size: .85rem; text-align: center; margin-top: 1rem; }
   .error { color: #e74c3c; }
+
+  #senha-screen, #config-screen, #lobby-screen, #question-screen, #ranking-screen, #final-screen { display: none; }
 </style>
 </head>
 <body>
@@ -288,7 +290,8 @@ function show(id) {
   ['senha-screen','config-screen','lobby-screen','question-screen','ranking-screen','final-screen'].forEach(s => {
     document.getElementById(s).style.display = 'none';
   });
-  document.getElementById(id).style.display = 'flex';
+  const flexScreens = ['senha-screen','lobby-screen','final-screen','ranking-screen'];
+  document.getElementById(id).style.display = flexScreens.includes(id) ? 'flex' : 'block';
 }
 
 async function connectSupabase() {
@@ -311,6 +314,7 @@ window.addEventListener('load', () => {
     connectSupabase();
   } else {
     show('senha-screen');
+    document.getElementById('senha-input').focus();
   }
 });
 
