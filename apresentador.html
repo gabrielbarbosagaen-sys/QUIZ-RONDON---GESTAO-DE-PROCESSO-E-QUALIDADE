@@ -27,7 +27,6 @@
   body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
 
   /* SENHA */
-  #senha-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
   .senha-card { background: var(--card); border-radius: 16px; padding: 2rem; width: 100%; max-width: 360px; border: 1px solid #ffffff15; text-align: center; }
   .senha-icon { font-size: 2.5rem; margin-bottom: 1rem; }
   .senha-card h2 { font-size: 1rem; color: var(--muted); margin-bottom: 1.5rem; }
@@ -146,7 +145,7 @@
   .error { color: #e74c3c; }
 
   #config-screen, #lobby-screen, #question-screen, #ranking-screen, #final-screen { display: none; }
-  #senha-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+  #senha-screen { display: flex !important; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
 </style>
 </head>
 <body>
@@ -313,9 +312,7 @@ async function connectSupabase() {
   }
 }
 
-window.addEventListener('load', () => {
-  document.getElementById('senha-input').focus();
-});
+document.addEventListener('DOMContentLoaded', () => { try { document.getElementById('senha-input').focus(); } catch(e){} });
 
 function setupLobby() {
   show('lobby-screen');
