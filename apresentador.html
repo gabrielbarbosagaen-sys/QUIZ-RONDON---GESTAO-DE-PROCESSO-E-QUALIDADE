@@ -145,7 +145,8 @@
   .msg { background: var(--card2); border-radius: 8px; padding: .6rem 1rem; color: var(--muted); font-size: .85rem; text-align: center; margin-top: 1rem; }
   .error { color: #e74c3c; }
 
-  #senha-screen, #config-screen, #lobby-screen, #question-screen, #ranking-screen, #final-screen { display: none; }
+  #config-screen, #lobby-screen, #question-screen, #ranking-screen, #final-screen { display: none; }
+  #senha-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
 </style>
 </head>
 <body>
@@ -267,14 +268,12 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let supabase, sessionCode, sessionId, currentQ = 0, timerInterval, timeLeft, answered = false, revealed = false;
 let participants = {}, participantUrl = '';
 
-const SENHA = '14993';
-
 function verificarSenha() {
-  const val = document.getElementById('senha-input').value;
+  const val = document.getElementById('senha-input').value.trim();
   const err = document.getElementById('senha-error');
   const card = document.querySelector('.senha-card');
-  if (val === SENHA) {
-    sessionStorage.setItem('rondon_auth', '1');
+  if (val === '14993') {
+    document.getElementById('senha-screen').style.display = 'none';
     connectSupabase();
   } else {
     err.textContent = 'Senha incorreta. Tente novamente.';
@@ -290,7 +289,7 @@ function show(id) {
   ['senha-screen','config-screen','lobby-screen','question-screen','ranking-screen','final-screen'].forEach(s => {
     document.getElementById(s).style.display = 'none';
   });
-  const flexScreens = ['senha-screen','lobby-screen','final-screen','ranking-screen'];
+  const flexScreens = ['lobby-screen','final-screen','ranking-screen'];
   document.getElementById(id).style.display = flexScreens.includes(id) ? 'flex' : 'block';
 }
 
@@ -310,12 +309,7 @@ async function connectSupabase() {
 }
 
 window.addEventListener('load', () => {
-  if (sessionStorage.getItem('rondon_auth') === '1') {
-    connectSupabase();
-  } else {
-    show('senha-screen');
-    document.getElementById('senha-input').focus();
-  }
+  document.getElementById('senha-input').focus();
 });
 
 function setupLobby() {
