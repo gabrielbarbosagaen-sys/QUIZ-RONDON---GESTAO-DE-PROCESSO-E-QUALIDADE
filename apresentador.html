@@ -289,11 +289,13 @@ function show(id) {
   ['senha-screen','config-screen','lobby-screen','question-screen','ranking-screen','final-screen'].forEach(s => {
     document.getElementById(s).style.display = 'none';
   });
-  const flexScreens = ['lobby-screen','final-screen','ranking-screen'];
-  document.getElementById(id).style.display = flexScreens.includes(id) ? 'flex' : 'block';
+  const blockScreens = ['config-screen','question-screen'];
+  document.getElementById(id).style.display = blockScreens.includes(id) ? 'block' : 'flex';
 }
 
 async function connectSupabase() {
+  const err = document.getElementById('senha-error');
+  if (err) err.textContent = 'Conectando...';
   try {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     sessionCode = Math.random().toString(36).substr(2,6).toUpperCase();
@@ -304,7 +306,10 @@ async function connectSupabase() {
     sessionId = data.id;
     setupLobby();
   } catch(e) {
-    alert('Erro ao conectar: ' + e.message);
+    document.getElementById('senha-screen').style.display = 'flex';
+    const errEl = document.getElementById('senha-error');
+    if (errEl) errEl.textContent = 'Erro ao conectar: ' + e.message;
+    console.error('Supabase error:', e);
   }
 }
 
